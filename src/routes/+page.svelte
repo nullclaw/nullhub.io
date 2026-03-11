@@ -531,12 +531,7 @@ tests/
     .feature-grid article:hover,
     .arch-grid article:hover,
     .stack-grid article:hover {
-        transform: translateY(-4px);
         border-color: var(--accent);
-        box-shadow:
-            0 8px 24px rgba(0, 0, 0, 0.4),
-            0 0 12px var(--border-glow),
-            inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     .feature-grid h3 {
@@ -615,12 +610,7 @@ tests/
     }
 
     .component:hover {
-        transform: translateY(-4px);
         border-color: var(--accent);
-        box-shadow:
-            0 12px 32px rgba(0, 0, 0, 0.5),
-            0 0 16px var(--border-glow),
-            inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     .top {
