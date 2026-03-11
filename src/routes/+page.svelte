@@ -9,9 +9,10 @@
 <section class="hero">
     <div class="hero-inner">
         <p class="kicker">ECOSYSTEM CONTROL PLANE</p>
-        <h1>The Simplest Way To Manage Your AI Infrastructure</h1>
+        <h1>The Simplest Way To Manage Your Autonomous AI Agents</h1>
         <p class="summary">
-            One binary. One UI. Install, configure, monitor, and update
+            One binary. One seamless interface. Deploy, configure, supervise,
+            and update
             <a href="https://nullclaw.io/nullclaw" target="_blank"
                 ><strong>NullClaw</strong></a
             >,
@@ -20,8 +21,8 @@
             >,
             <a href="https://nullclaw.io/nulltickets" target="_blank"
                 ><strong>NullTickets</strong></a
-            >, and the rest of the ecosystem — from a single high-performance
-            dashboard or the command line.
+            >, and additional ecosystem components—all from a unified
+            high-performance dashboard or CLI.
         </p>
 
         <div class="hero-actions">
@@ -62,58 +63,65 @@
         <article>
             <h3>Install Wizard</h3>
             <p>
-                Manifest-driven guided setup with component-aware flows and
-                local NullTickets → NullBoiler linking. Works from the browser
+                Manifest-driven setup wizard with intelligent component linking
+                (e.g., NullTickets to NullBoiler). Fully accessible via browser
                 or terminal.
             </p>
         </article>
         <article>
             <h3>Process Supervision</h3>
             <p>
-                Start, stop, restart, crash recovery with backoff. All instances
-                supervised by the hub daemon with auto-restart on failure.
+                Robust lifecycle management: start, stop, restart, and automatic
+                crash recovery with exponential backoff. The hub daemon
+                supervises all ecosystem instances.
             </p>
         </article>
         <article>
             <h3>Health Monitoring</h3>
             <p>
-                Periodic HTTP health checks, dashboard status cards, and
-                real-time state updates via SSE streaming.
+                Continuous HTTP health probing, real-time dashboard status
+                cards, and live state updates delivered via Server-Sent Events
+                (SSE).
             </p>
         </article>
         <article>
             <h3>Config Management</h3>
             <p>
-                Structured editors for NullClaw, NullBoiler, and NullTickets
-                configuration. Raw JSON fallback when needed.
+                Intuitive structured editors for NullClaw, NullBoiler, and
+                NullTickets configurations, with a raw JSON fallback layer for
+                advanced users.
             </p>
         </article>
         <article>
             <h3>Log Viewing</h3>
             <p>
-                Tail and live SSE streaming per instance. View logs directly in
-                the browser dashboard or follow from the CLI.
+                Real-time log tailing and streaming per instance. Analyze logs
+                directly within the browser dashboard or follow them from your
+                terminal.
             </p>
         </article>
         <article>
             <h3>One-Click Updates</h3>
             <p>
-                Download new versions, migrate config, rollback on failure.
-                Update individual instances or everything at once.
+                Seamlessly download new component versions, automatically
+                migrate configurations, and safely rollback on failure. Update
+                individually or simultaneously.
             </p>
         </article>
         <article>
             <h3>Cross-Component Linking</h3>
             <p>
-                Auto-connect NullTickets → NullBoiler, generate native tracker
-                config, and inspect queue/orchestrator status from one UI.
+                Automatically bind dependent components (NullTickets →
+                NullBoiler), configure trackers natively, and inspect
+                orchestrator queues from a unified UI.
             </p>
         </article>
         <article>
             <h3>Web UI + CLI</h3>
             <p>
-                Browser dashboard for humans, CLI for automation and scripting.
-                Both interfaces provide full feature parity.
+                A premium browser dashboard for human operators, paired with a
+                powerful CLI for automation scripts—both offering complete
+                feature parity.
             </p>
         </article>
     </div>
@@ -125,32 +133,33 @@
         <article>
             <h3>Zig Backend</h3>
             <p>
-                HTTP server, process supervisor, installer, manifest engine. Two
-                modes: server (HTTP + supervisor threads) or CLI (direct calls,
-                stdout, exit).
+                High-performance HTTP server, robust process supervisor,
+                installer, and manifest engine. Runs in long-lived server mode
+                or transient CLI mode.
             </p>
         </article>
         <article>
             <h3>Svelte Frontend</h3>
             <p>
-                SvelteKit with static adapter, <code>@embedFile</code>'d into
-                the binary. Component UI modules (chat, monitor) loaded
-                dynamically via Svelte 5 <code>mount()</code>.
+                Statically generated SvelteKit application embedded directly
+                into the binary overhead-free. Modular UI components load
+                dynamically using Svelte 5.
             </p>
         </article>
         <article>
             <h3>Manifest-Driven</h3>
             <p>
-                Each component publishes <code>nullhub-manifest.json</code> describing
-                installation, configuration, launch, health checks, wizard steps,
-                and UI modules. NullHub is a generic engine that interprets manifests.
+                Ecosystem components publish declarative manifests specifying
+                their setup, configuration, and health parameters. NullHub acts
+                as the universal interpreter.
             </p>
         </article>
         <article>
             <h3>Local Storage</h3>
             <p>
-                All state lives under <code>~/.nullhub/</code> — config, instances,
-                binaries, logs, and cached manifests. No external database required.
+                Zero external database required. All state—configurations,
+                runtime instances, binaries, logs, and manifest caches—persists
+                neatly in a local directory.
             </p>
         </article>
     </div>
@@ -166,8 +175,8 @@
             </div>
             <h3>NullClaw</h3>
             <p>
-                Fastest, smallest, and fully autonomous AI assistant
-                infrastructure written in Zig.
+                The fastest, most lightweight, and fully autonomous AI agent
+                execution runtime written from the ground up in Zig.
             </p>
             <ul>
                 <li>Providers, channels, tools, memory, policy</li>
@@ -192,8 +201,9 @@
             </div>
             <h3>NullBoiler</h3>
             <p>
-                Workflow orchestrator for multi-step run execution with
-                approvals, retries, advanced step types, and worker dispatch.
+                Advanced workflow orchestrator handling multi-step agent
+                executions with manual approvals, automatic retries, and
+                intelligent worker dispatch.
             </p>
             <ul>
                 <li>DAG execution with run/step/events APIs</li>
@@ -215,10 +225,10 @@
                 <span class="tag">MANAGED</span>
                 <span class="name">Task Plane</span>
             </div>
-            <h3>NullTickets (NullTracker)</h3>
+            <h3>NullTickets</h3>
             <p>
-                Task tracking and execution-state backend with pipelines,
-                leases, transitions, gates, dependencies, and artifacts.
+                Comprehensive execution-state backend managing task pipelines,
+                leases, requisite gates, dependencies, and generated artifacts.
             </p>
             <ul>
                 <li>Role-based claim/lease loop for autonomous agents</li>
@@ -413,6 +423,7 @@ tests/
         text-wrap: balance;
         background: linear-gradient(180deg, var(--fg) 0%, var(--fg-dim) 100%);
         -webkit-background-clip: text;
+        background-clip: text;
         -webkit-text-fill-color: transparent;
         text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }

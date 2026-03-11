@@ -1,3 +1,3 @@
+# allow crawling everything by default
 User-agent: *
-Allow: /
-Sitemap: https://nullhub.io/sitemap.xml
+Disallow:
