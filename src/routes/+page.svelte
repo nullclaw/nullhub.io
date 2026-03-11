@@ -691,11 +691,9 @@ tests/
         border: 1px solid var(--border);
         border-radius: 12px;
         overflow: auto;
-        background: rgba(0, 0, 0, 0.6);
+        background: var(--panel-bg);
         backdrop-filter: blur(12px);
-        box-shadow:
-            inset 0 0 20px rgba(0, 0, 0, 0.8),
-            0 4px 12px rgba(0, 0, 0, 0.3);
+        box-shadow: var(--panel-shadow);
     }
 
     pre {
@@ -704,7 +702,7 @@ tests/
         font-size: 0.9rem;
         line-height: 1.6;
         color: var(--fg);
-        text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+        text-shadow: var(--panel-pre-text-shadow);
     }
 
     .cli-note {
