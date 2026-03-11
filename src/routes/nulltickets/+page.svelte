@@ -7,22 +7,39 @@
     <div class="breadcrumb"><a href="/">Ecosystem</a> / NullTickets</div>
     <h1>NullTickets Task Control Plane</h1>
     <p>
-      Zig task-state backend for autonomous delivery systems: pipeline definitions,
-      queueing, lease-based claiming, stage transitions, gate checks, artifacts,
-      and operational queue analytics.
+      Zig task-state backend for autonomous delivery systems: pipeline
+      definitions, queueing, lease-based claiming, stage transitions, gate
+      checks, artifacts, and operational queue analytics.
     </p>
 
     <div class="actions">
-      <a href="/nulltickets/docs/quick-start" class="btn primary">Quick Start</a>
+      <a href="/nulltickets/docs/quick-start" class="btn primary">Quick Start</a
+      >
       <a href="/nulltickets/docs/api" class="btn secondary">API</a>
-      <a href="https://github.com/nullclaw/nulltickets" target="_blank" class="btn secondary">GitHub</a>
+      <a
+        href="https://github.com/nullclaw/nulltickets"
+        target="_blank"
+        class="btn secondary">GitHub</a
+      >
     </div>
 
     <div class="metrics">
-      <article><h3>21</h3><p>API route paths (`src/openapi.json`)</p></article>
-      <article><h3>12</h3><p>SQLite tables in initial migration</p></article>
-      <article><h3>2</h3><p>OTLP ingest endpoints (`/v1/traces`, `/otlp/v1/traces`)</p></article>
-      <article><h3>300s</h3><p>default lease TTL for claim/heartbeat</p></article>
+      <article>
+        <h3>21</h3>
+        <p>API route paths (`src/openapi.json`)</p>
+      </article>
+      <article>
+        <h3>12</h3>
+        <p>SQLite tables in initial migration</p>
+      </article>
+      <article>
+        <h3>2</h3>
+        <p>OTLP ingest endpoints (`/v1/traces`, `/otlp/v1/traces`)</p>
+      </article>
+      <article>
+        <h3>300s</h3>
+        <p>default lease TTL for claim/heartbeat</p>
+      </article>
     </div>
   </section>
 
@@ -50,18 +67,12 @@
         <li><a href="/nulltickets/docs/operations">Operations</a></li>
       </ul>
     </article>
-
-    <article>
-      <h2>Alias</h2>
-      <ul>
-        <li><a href="/tracker">NullTracker Alias Page</a></li>
-      </ul>
-    </article>
   </section>
 
   <section class="quickstart">
     <h2>Quick Start</h2>
-    <pre><code>git clone https://github.com/nullclaw/nulltickets.git
+    <pre><code
+        >git clone https://github.com/nullclaw/nulltickets.git
 cd nulltickets
 zig build -Doptimize=ReleaseSmall
 ./zig-out/bin/nulltickets --port 7700 --db /tmp/nulltickets.db
@@ -78,22 +89,23 @@ curl -s -X POST http://127.0.0.1:7700/pipelines \
 # claim work for a role
 curl -s -X POST http://127.0.0.1:7700/leases/claim \
   -H 'Content-Type: application/json' \
-  -d '&#123;"agent_id":"researcher-1","agent_role":"researcher"&#125;'</code></pre>
+  -d '&#123;"agent_id":"researcher-1","agent_role":"researcher"&#125;'</code
+      ></pre>
   </section>
 
   <section class="snapshot">
     <h2>Code-Derived Snapshot</h2>
     <p>
-      Source basis: `src/main.zig`, `src/api.zig`, `src/domain.zig`, `src/store.zig`,
-      `src/migrations/001_init.sql`, and `src/openapi.json`.
+      Source basis: `src/main.zig`, `src/api.zig`, `src/domain.zig`,
+      `src/store.zig`, `src/migrations/001_init.sql`, and `src/openapi.json`.
     </p>
 
     <div class="lists">
       <article>
         <h3>Pipeline Validation Rules</h3>
         <p>
-          Definitions must include valid `initial`, known transition states,
-          at least one terminal state, and outgoing transitions for each
+          Definitions must include valid `initial`, known transition states, at
+          least one terminal state, and outgoing transitions for each
           non-terminal state.
         </p>
       </article>
@@ -101,24 +113,26 @@ curl -s -X POST http://127.0.0.1:7700/leases/claim \
       <article>
         <h3>Claim + Lease Security</h3>
         <p>
-          Worker agents claim tasks by role, receive `lease_token`, and then must
-          call run mutation endpoints with `Authorization: Bearer &lt;lease_token&gt;`.
+          Worker agents claim tasks by role, receive `lease_token`, and then
+          must call run mutation endpoints with `Authorization: Bearer
+          &lt;lease_token&gt;`.
         </p>
       </article>
 
       <article>
         <h3>Idempotent Writes</h3>
         <p>
-          Write endpoints support `Idempotency-Key`; key reuse with different body
-          returns `409 idempotency_conflict`.
+          Write endpoints support `Idempotency-Key`; key reuse with different
+          body returns `409 idempotency_conflict`.
         </p>
       </article>
 
       <article>
         <h3>Quality Gates + Ops</h3>
         <p>
-          Stage transitions can require gates (`required_gates`) and queue-level stats
-          are available via `GET /ops/queue` (`claimable`, `stuck`, `near_expiry`).
+          Stage transitions can require gates (`required_gates`) and queue-level
+          stats are available via `GET /ops/queue` (`claimable`, `stuck`,
+          `near_expiry`).
         </p>
       </article>
     </div>
@@ -142,8 +156,11 @@ curl -s -X POST http://127.0.0.1:7700/leases/claim \
   }
 
   .hero {
-    background:
-      linear-gradient(165deg, color-mix(in srgb, var(--accent) 9%, transparent), transparent 45%),
+    background: linear-gradient(
+        165deg,
+        color-mix(in srgb, var(--accent) 9%, transparent),
+        transparent 45%
+      ),
       var(--bg-surface);
   }
 
