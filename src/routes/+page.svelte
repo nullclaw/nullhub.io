@@ -13,7 +13,7 @@
         <p class="summary">
             One binary. One seamless interface. Deploy, configure, supervise,
             and update
-            <a href="https://nullclaw.io/nullclaw" target="_blank"
+            <a href="https://nullclaw.io" target="_blank"
                 ><strong>NullClaw</strong></a
             >,
             <a href="/nullboiler"><strong>NullBoiler</strong></a>,
