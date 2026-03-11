@@ -78,10 +78,11 @@
             <a href="/#architecture">Architecture</a>
             <a href="/#components">Components</a>
             <a href="/#cli">CLI</a>
-            <a href="/chat-ui/docs/quick-start">Chat UI Docs</a>
-            <a href="/nullboiler/docs/quick-start">NullBoiler Docs</a>
-            <a href="/nulltickets/docs/quick-start">NullTickets Docs</a>
-            <a href="https://nullclaw.io" target="_blank">Core Runtime Docs</a>
+            <span class="nav-separator">|</span>
+            <a href="/chat-ui/docs/quick-start">Chat UI</a>
+            <a href="/nullboiler/docs/quick-start">NullBoiler</a>
+            <a href="/nulltickets/docs/quick-start">NullTickets</a>
+            <a href="https://nullclaw.io" target="_blank">Core Runtime</a>
         </div>
 
         <div class="nav-controls">
@@ -154,7 +155,7 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 20px;
+        gap: 16px;
         padding: 0 28px;
         z-index: 100;
         transition: all 0.25s ease;
@@ -189,18 +190,26 @@
 
     .nav-links {
         display: flex;
-        gap: 22px;
+        gap: 16px;
+        align-items: center;
+    }
+
+    .nav-separator {
+        color: var(--border);
+        font-size: 0.9rem;
+        user-select: none;
     }
 
     .nav-links a {
         text-decoration: none;
         color: var(--fg-dim);
-        font-size: 0.9rem;
+        font-size: 0.82rem;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         border-bottom: 1px solid transparent;
         transition: all 0.2s ease;
         padding-bottom: 2px;
+        white-space: nowrap;
     }
 
     .nav-links a:hover {
@@ -293,7 +302,7 @@
         font-family: var(--font-mono);
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 980px) {
         .navbar {
             flex-wrap: wrap;
             height: auto;
@@ -310,11 +319,22 @@
             width: 100%;
             overflow-x: auto;
             padding-top: 14px;
-            padding-bottom: 4px;
+            padding-bottom: 10px;
             margin-top: 8px;
             border-top: 1px dashed var(--border);
             justify-content: flex-start;
+            flex-wrap: nowrap;
             -webkit-overflow-scrolling: touch;
+            gap: 20px;
+        }
+
+        .nav-separator {
+            display: none;
+        }
+
+        .nav-links a {
+            flex-shrink: 0;
+            font-size: 0.85rem;
         }
 
         .nav-links::-webkit-scrollbar {
