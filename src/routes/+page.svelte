@@ -8,7 +8,7 @@
 
 <section class="hero">
     <div class="hero-inner">
-        <p class="kicker">NULLHUB</p>
+        <p class="kicker">ECOSYSTEM CONTROL PLANE</p>
         <h1>The Simplest Way To Manage Your AI Infrastructure</h1>
         <p class="summary">
             One binary. One UI. Install, configure, monitor, and update
@@ -20,8 +20,8 @@
             >,
             <a href="https://nullclaw.io/nulltickets" target="_blank"
                 ><strong>NullTickets</strong></a
-            >, and the rest of the ecosystem — from a single dashboard or the
-            command line.
+            >, and the rest of the ecosystem — from a single high-performance
+            dashboard or the command line.
         </p>
 
         <div class="hero-actions">
@@ -175,7 +175,9 @@
                 <li>Execution runtime for worker agents</li>
             </ul>
             <div class="actions">
-                <a href="/nullclaw/docs/getting-started" target="_blank">Docs</a
+                <a
+                    href="https://nullclaw.io/nullclaw/docs/getting-started"
+                    target="_blank">Docs</a
                 >
                 <a href="https://github.com/nullclaw/nullclaw" target="_blank"
                     >GitHub</a
@@ -365,15 +367,35 @@ tests/
     }
 
     .hero-inner {
+        position: relative;
         border: 1px solid var(--border);
         background: radial-gradient(
                 circle at 85% 0%,
-                color-mix(in srgb, var(--accent) 24%, transparent),
-                transparent 40%
+                color-mix(in srgb, var(--accent) 15%, transparent),
+                transparent 45%
             ),
             var(--bg-surface);
-        padding: 34px;
-        border-radius: 12px;
+        padding: 40px;
+        border-radius: 16px;
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow:
+            0 8px 32px rgba(0, 0, 0, 0.4),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
+        overflow: hidden;
+    }
+
+    .hero-inner::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            135deg,
+            transparent,
+            rgba(255, 255, 255, 0.02) 40%,
+            transparent
+        );
+        pointer-events: none;
     }
 
     .kicker {
@@ -385,10 +407,14 @@ tests/
 
     h1 {
         margin: 0;
-        font-size: clamp(1.8rem, 4vw, 3rem);
+        font-size: clamp(2rem, 4.5vw, 3.5rem);
         line-height: 1.1;
         max-width: 20ch;
         text-wrap: balance;
+        background: linear-gradient(180deg, var(--fg) 0%, var(--fg-dim) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
     }
 
     .summary {
@@ -479,11 +505,30 @@ tests/
         gap: 12px;
     }
 
-    .feature-grid article {
+    .feature-grid article,
+    .arch-grid article,
+    .stack-grid article {
         border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 16px;
+        border-radius: 12px;
+        padding: 20px;
         background: var(--bg-surface);
+        backdrop-filter: blur(12px);
+        transition:
+            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    .feature-grid article:hover,
+    .arch-grid article:hover,
+    .stack-grid article:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow:
+            0 8px 24px rgba(0, 0, 0, 0.4),
+            0 0 12px var(--border-glow),
+            inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     .feature-grid h3 {
@@ -507,13 +552,6 @@ tests/
         display: grid;
         grid-template-columns: repeat(4, minmax(0, 1fr));
         gap: 12px;
-    }
-
-    .arch-grid article {
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 16px;
-        background: var(--bg-surface);
     }
 
     .arch-grid h3 {
@@ -546,20 +584,35 @@ tests/
 
     .component {
         border: 1px solid var(--border);
-        border-radius: 12px;
-        padding: 18px;
+        border-radius: 14px;
+        padding: 24px;
         background: var(--bg-surface);
         display: grid;
-        gap: 10px;
+        gap: 12px;
+        backdrop-filter: blur(12px);
+        transition:
+            transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+            box-shadow 0.3s ease,
+            border-color 0.3s ease;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05);
     }
 
     .component.active {
         background: linear-gradient(
                 160deg,
-                color-mix(in srgb, var(--accent) 7%, transparent),
-                transparent 45%
+                color-mix(in srgb, var(--accent) 5%, transparent),
+                transparent 50%
             ),
             var(--bg-surface);
+    }
+
+    .component:hover {
+        transform: translateY(-4px);
+        border-color: var(--accent);
+        box-shadow:
+            0 12px 32px rgba(0, 0, 0, 0.5),
+            0 0 16px var(--border-glow),
+            inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     .top {
@@ -630,14 +683,20 @@ tests/
         border: 1px solid var(--border);
         border-radius: 12px;
         overflow: auto;
-        background: #000;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(12px);
+        box-shadow:
+            inset 0 0 20px rgba(0, 0, 0, 0.8),
+            0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     pre {
         margin: 0;
-        padding: 18px;
-        font-size: 0.88rem;
-        line-height: 1.5;
+        padding: 24px;
+        font-size: 0.9rem;
+        line-height: 1.6;
+        color: var(--fg);
+        text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
     }
 
     .cli-note {
@@ -663,13 +722,6 @@ tests/
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 12px;
-    }
-
-    .stack-grid article {
-        border: 1px solid var(--border);
-        border-radius: 10px;
-        padding: 16px;
-        background: var(--bg-surface);
     }
 
     .stack-grid h3 {
