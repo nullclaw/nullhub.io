@@ -78,7 +78,10 @@
             <a href="/#architecture">Architecture</a>
             <a href="/#components">Components</a>
             <a href="/#cli">CLI</a>
-            <a href="https://nullclaw.io" target="_blank">Ecosystem Docs</a>
+            <a href="/chat-ui/docs/quick-start">Chat UI Docs</a>
+            <a href="/nullboiler/docs/quick-start">NullBoiler Docs</a>
+            <a href="/nulltickets/docs/quick-start">NullTickets Docs</a>
+            <a href="https://nullclaw.io" target="_blank">Core Runtime Docs</a>
         </div>
 
         <div class="nav-controls">
@@ -111,7 +114,7 @@
             </p>
             <div class="repo-links">
                 <a href="https://nullclaw.io" target="_blank"
-                    >ecosystem docs (nullclaw.io)</a
+                    >core runtime docs (nullclaw.io)</a
                 >
                 <span class="separator">|</span>
                 <a href="https://github.com/nullclaw/nullhub" target="_blank"

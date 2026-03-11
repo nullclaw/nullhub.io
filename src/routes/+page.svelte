@@ -175,7 +175,8 @@
                 <li>Execution runtime for worker agents</li>
             </ul>
             <div class="actions">
-                <a href="https://nullclaw.io/nullclaw" target="_blank">Docs</a>
+                <a href="/nullclaw/docs/getting-started" target="_blank">Docs</a
+                >
                 <a href="https://github.com/nullclaw/nullclaw" target="_blank"
                     >GitHub</a
                 >
@@ -200,8 +201,7 @@
                 </li>
             </ul>
             <div class="actions">
-                <a href="https://nullclaw.io/nullboiler" target="_blank">Docs</a
-                >
+                <a href="/nullboiler/docs/quick-start" target="_blank">Docs</a>
                 <a href="https://github.com/nullclaw/nullboiler" target="_blank"
                     >GitHub</a
                 >
@@ -224,9 +224,7 @@
                 <li>Operational queue analytics and OTLP ingest</li>
             </ul>
             <div class="actions">
-                <a href="https://nullclaw.io/nulltickets" target="_blank"
-                    >Docs</a
-                >
+                <a href="/nulltickets/docs/quick-start" target="_blank">Docs</a>
                 <a
                     href="https://github.com/nullclaw/nulltickets"
                     target="_blank">GitHub</a
