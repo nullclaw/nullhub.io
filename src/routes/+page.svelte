@@ -16,13 +16,10 @@
             <a href="https://nullclaw.io/nullclaw" target="_blank"
                 ><strong>NullClaw</strong></a
             >,
-            <a href="https://nullclaw.io/nullboiler" target="_blank"
-                ><strong>NullBoiler</strong></a
-            >,
-            <a href="https://nullclaw.io/nulltickets" target="_blank"
-                ><strong>NullTickets</strong></a
-            >, and additional ecosystem components—all from a unified
-            high-performance dashboard or CLI.
+            <a href="/nullboiler"><strong>NullBoiler</strong></a>,
+            <a href="/nulltickets"><strong>NullTickets</strong></a>, and
+            additional ecosystem components—all from a unified high-performance
+            dashboard or CLI.
         </p>
 
         <div class="hero-actions">
