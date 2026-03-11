@@ -12,9 +12,16 @@
         <h1>The Simplest Way To Manage Your AI Infrastructure</h1>
         <p class="summary">
             One binary. One UI. Install, configure, monitor, and update
-            <strong>NullClaw</strong>, <strong>NullBoiler</strong>,
-            <strong>NullTickets</strong>, and the rest of the ecosystem — from a
-            single dashboard or the command line.
+            <a href="https://nullclaw.io/nullclaw" target="_blank"
+                ><strong>NullClaw</strong></a
+            >,
+            <a href="https://nullclaw.io/nullboiler" target="_blank"
+                ><strong>NullBoiler</strong></a
+            >,
+            <a href="https://nullclaw.io/nulltickets" target="_blank"
+                ><strong>NullTickets</strong></a
+            >, and the rest of the ecosystem — from a single dashboard or the
+            command line.
         </p>
 
         <div class="hero-actions">
