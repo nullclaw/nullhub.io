@@ -1,3 +1,291 @@
+<script lang="ts">
+    import { onMount } from "svelte";
+
+    type OperatingSystem = "windows" | "macos" | "linux" | "unknown";
+    type Architecture = "x86_64" | "aarch64" | "riscv64" | "unknown";
+    type DownloadOption = {
+        id: string;
+        os: Exclude<OperatingSystem, "unknown">;
+        arch: Exclude<Architecture, "unknown">;
+        label: string;
+        shortLabel: string;
+        assetName: string;
+        href: string;
+    };
+    type NavigatorUAData = {
+        platform?: string;
+        getHighEntropyValues?: (
+            hints: string[],
+        ) => Promise<{
+            architecture?: string;
+            bitness?: string;
+            platform?: string;
+        }>;
+    };
+
+    const REPO_URL = "https://github.com/nullclaw/nullhub";
+    const LATEST_RELEASE_URL = `${REPO_URL}/releases/latest`;
+    const LATEST_DOWNLOAD_URL = `${LATEST_RELEASE_URL}/download`;
+    const GHCR_PACKAGE_URL =
+        "https://github.com/nullclaw/nullhub/pkgs/container/nullhub";
+    const GHCR_IMAGE = "ghcr.io/nullclaw/nullhub:latest";
+    const DOCKER_RUN_COMMAND =
+        "docker run --rm -p 19800:19800 -v nullhub-data:/nullhub-data ghcr.io/nullclaw/nullhub:latest";
+    const downloadOptions: DownloadOption[] = [
+        {
+            id: "macos-aarch64",
+            os: "macos",
+            arch: "aarch64",
+            label: "macOS Apple Silicon",
+            shortLabel: "macOS ARM64",
+            assetName: "nullhub-macos-aarch64.bin",
+            href: `${LATEST_DOWNLOAD_URL}/nullhub-macos-aarch64.bin`,
+        },
+        {
+            id: "macos-x86_64",
+            os: "macos",
+            arch: "x86_64",
+            label: "macOS Intel",
+            shortLabel: "macOS x64",
+            assetName: "nullhub-macos-x86_64.bin",
+            href: `${LATEST_DOWNLOAD_URL}/nullhub-macos-x86_64.bin`,
+        },
+        {
+            id: "windows-x86_64",
+            os: "windows",
+            arch: "x86_64",
+            label: "Windows x64",
+            shortLabel: "Windows x64",
+            assetName: "nullhub-windows-x86_64.exe",
+            href: `${LATEST_DOWNLOAD_URL}/nullhub-windows-x86_64.exe`,
+        },
+        {
+            id: "windows-aarch64",
+            os: "windows",
+            arch: "aarch64",
+            label: "Windows ARM64",
+            shortLabel: "Windows ARM64",
+            assetName: "nullhub-windows-aarch64.exe",
+            href: `${LATEST_DOWNLOAD_URL}/nullhub-windows-aarch64.exe`,
+        },
+        {
+            id: "linux-x86_64",
+            os: "linux",
+            arch: "x86_64",
+            label: "Linux x64",
+            shortLabel: "Linux x64",
+            assetName: "nullhub-linux-x86_64.bin",
+            href: `${LATEST_DOWNLOAD_URL}/nullhub-linux-x86_64.bin`,
+        },
+        {
+            id: "linux-aarch64",
+            os: "linux",
+            arch: "aarch64",
+            label: "Linux ARM64",
+            shortLabel: "Linux ARM64",
+            assetName: "nullhub-linux-aarch64.bin",
+            href: `${LATEST_DOWNLOAD_URL}/nullhub-linux-aarch64.bin`,
+        },
+        {
+            id: "linux-riscv64",
+            os: "linux",
+            arch: "riscv64",
+            label: "Linux RISC-V",
+            shortLabel: "Linux RISC-V",
+            assetName: "nullhub-linux-riscv64.bin",
+            href: `${LATEST_DOWNLOAD_URL}/nullhub-linux-riscv64.bin`,
+        },
+    ];
+
+    let detectedOs = $state<OperatingSystem>("unknown");
+    let detectedArch = $state<Architecture>("unknown");
+
+    let recommendedDownload = $derived.by(() => {
+        if (detectedOs === "unknown" || detectedArch === "unknown") {
+            return null;
+        }
+
+        return (
+            downloadOptions.find(
+                (option) =>
+                    option.os === detectedOs && option.arch === detectedArch,
+            ) ?? null
+        );
+    });
+
+    let prioritizedDownloads = $derived.by(() => {
+        if (recommendedDownload) {
+            return [
+                recommendedDownload,
+                ...downloadOptions.filter(
+                    (option) => option.id !== recommendedDownload.id,
+                ),
+            ];
+        }
+
+        if (detectedOs === "unknown") {
+            return downloadOptions;
+        }
+
+        return [
+            ...downloadOptions.filter((option) => option.os === detectedOs),
+            ...downloadOptions.filter((option) => option.os !== detectedOs),
+        ];
+    });
+
+    let detectedLabel = $derived(formatPlatformLabel(detectedOs, detectedArch));
+
+    onMount(() => {
+        void detectClientPlatform();
+    });
+
+    async function detectClientPlatform() {
+        const uaData = (
+            navigator as Navigator & { userAgentData?: NavigatorUAData }
+        ).userAgentData;
+        const highEntropyValues = uaData?.getHighEntropyValues
+            ? await uaData.getHighEntropyValues([
+                    "architecture",
+                    "bitness",
+                    "platform",
+                ])
+            : undefined;
+
+        const os = inferOperatingSystem(
+            highEntropyValues?.platform ??
+                uaData?.platform ??
+                navigator.userAgent ??
+                navigator.platform,
+        );
+        const arch = inferArchitecture({
+            os,
+            userAgent: navigator.userAgent,
+            platform: navigator.platform,
+            architecture: highEntropyValues?.architecture,
+            bitness: highEntropyValues?.bitness,
+        });
+
+        detectedOs = os;
+        detectedArch = arch;
+    }
+
+    function inferOperatingSystem(source: string) {
+        const normalized = source.toLowerCase();
+
+        if (normalized.includes("win")) {
+            return "windows" satisfies OperatingSystem;
+        }
+
+        if (normalized.includes("mac") || normalized.includes("darwin")) {
+            return "macos" satisfies OperatingSystem;
+        }
+
+        if (normalized.includes("linux") || normalized.includes("x11")) {
+            return "linux" satisfies OperatingSystem;
+        }
+
+        return "unknown" satisfies OperatingSystem;
+    }
+
+    function inferArchitecture({
+        os,
+        userAgent,
+        platform,
+        architecture,
+        bitness,
+    }: {
+        os: OperatingSystem;
+        userAgent: string;
+        platform: string;
+        architecture?: string;
+        bitness?: string;
+    }) {
+        const normalizedArchitecture = architecture?.toLowerCase() ?? "";
+        const normalizedBitness = bitness?.toLowerCase() ?? "";
+
+        if (normalizedArchitecture.includes("riscv")) {
+            return "riscv64" satisfies Architecture;
+        }
+
+        if (
+            normalizedArchitecture.includes("arm") &&
+            normalizedBitness !== "32"
+        ) {
+            return "aarch64" satisfies Architecture;
+        }
+
+        if (
+            normalizedArchitecture.includes("x86") &&
+            normalizedBitness === "64"
+        ) {
+            return "x86_64" satisfies Architecture;
+        }
+
+        const normalizedSource = `${userAgent} ${platform}`.toLowerCase();
+
+        if (normalizedSource.includes("riscv64")) {
+            return "riscv64" satisfies Architecture;
+        }
+
+        if (
+            normalizedSource.includes("arm64") ||
+            normalizedSource.includes("aarch64") ||
+            normalizedSource.includes("armv8")
+        ) {
+            return "aarch64" satisfies Architecture;
+        }
+
+        if (
+            os === "windows" &&
+            /(win64|wow64|x64|amd64|x86_64)/.test(normalizedSource)
+        ) {
+            return "x86_64" satisfies Architecture;
+        }
+
+        if (
+            os === "linux" &&
+            /(x86_64|amd64)/.test(normalizedSource)
+        ) {
+            return "x86_64" satisfies Architecture;
+        }
+
+        if (
+            os === "macos" &&
+            normalizedSource.includes("apple silicon")
+        ) {
+            return "aarch64" satisfies Architecture;
+        }
+
+        return "unknown" satisfies Architecture;
+    }
+
+    function formatOperatingSystem(os: OperatingSystem) {
+        if (os === "windows") return "Windows";
+        if (os === "macos") return "macOS";
+        if (os === "linux") return "Linux";
+        return "Unknown OS";
+    }
+
+    function formatArchitecture(arch: Architecture) {
+        if (arch === "x86_64") return "x64";
+        if (arch === "aarch64") return "ARM64";
+        if (arch === "riscv64") return "RISC-V";
+        return "Unknown CPU";
+    }
+
+    function formatPlatformLabel(os: OperatingSystem, arch: Architecture) {
+        if (os === "unknown") {
+            return "Unsupported browser detection";
+        }
+
+        if (arch === "unknown") {
+            return formatOperatingSystem(os);
+        }
+
+        return `${formatOperatingSystem(os)} ${formatArchitecture(arch)}`;
+    }
+</script>
+
 <svelte:head>
     <title>NullHub — Ecosystem Management Hub</title>
     <meta
@@ -23,7 +311,9 @@
         </p>
 
         <div class="hero-actions">
-            <a href="#quickstart" class="btn primary">Quick Start</a>
+            <a href="#downloads" class="btn primary">Download Latest</a>
+            <a href="#docker" class="btn secondary">Run with Docker</a>
+            <a href="#quickstart" class="btn secondary">Quick Start</a>
             <a href="#features" class="btn secondary">Features</a>
             <a href="#cli" class="btn secondary">CLI Reference</a>
             <a
@@ -31,6 +321,128 @@
                 target="_blank"
                 class="btn secondary">GitHub</a
             >
+        </div>
+
+        <div class="download-console" id="downloads">
+            <div class="download-header">
+                <div class="download-copy">
+                    <p class="download-kicker">LATEST RELEASE BINARIES</p>
+                    <div class="download-title-row">
+                        <div>
+                            <h2>
+                                {#if recommendedDownload}
+                                    Download for {recommendedDownload.label}
+                                {:else}
+                                    Pick the binary for your OS
+                                {/if}
+                            </h2>
+                            <p class="download-description">
+                                {#if recommendedDownload}
+                                    Auto-detected in your browser as
+                                    <strong>{detectedLabel}</strong>. The
+                                    download URL always resolves to the newest
+                                    GitHub release asset.
+                                {:else if detectedOs !== "unknown"}
+                                    Detected
+                                    <strong>{formatOperatingSystem(detectedOs)}</strong>.
+                                    Choose the matching CPU architecture below,
+                                    or open the full release page.
+                                {:else}
+                                    Direct download links always point at the
+                                    latest GitHub release. Choose the binary
+                                    that matches your OS and CPU.
+                                {/if}
+                            </p>
+                        </div>
+                        <span class="download-pill">
+                            {#if recommendedDownload}
+                                Auto: {detectedLabel}
+                            {:else if detectedOs !== "unknown"}
+                                Detected: {detectedLabel}
+                            {:else}
+                                Latest GitHub Release
+                            {/if}
+                        </span>
+                    </div>
+
+                    <div class="download-actions">
+                        {#if recommendedDownload}
+                            <a
+                                href={recommendedDownload.href}
+                                class="btn primary download-primary"
+                            >
+                                Download {recommendedDownload.shortLabel}
+                            </a>
+                        {/if}
+                        <a
+                            href={LATEST_RELEASE_URL}
+                            target="_blank"
+                            rel="noreferrer"
+                            class="btn secondary"
+                        >
+                            View All Assets
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="download-grid">
+                {#each prioritizedDownloads as option}
+                    <a
+                        href={option.href}
+                        class="download-chip"
+                        class:selected={recommendedDownload?.id === option.id}
+                    >
+                        <span class="download-chip-title">{option.label}</span>
+                        <span class="download-chip-meta">{option.assetName}</span>
+                    </a>
+                {/each}
+            </div>
+
+            <div class="package-panel" id="docker">
+                <div class="package-copy">
+                    <p class="package-kicker">OCI PACKAGE</p>
+                    <h3>Run with Docker</h3>
+                    <p>
+                        NullHub is also published to GitHub Container Registry
+                        as <code>{GHCR_IMAGE}</code> with Linux
+                        <code>amd64</code> and <code>arm64</code> images. The
+                        default container starts the web UI on
+                        <code>http://127.0.0.1:19800</code>.
+                    </p>
+                </div>
+                <div class="package-actions">
+                    <a
+                        href={GHCR_PACKAGE_URL}
+                        target="_blank"
+                        rel="noreferrer"
+                        class="btn secondary"
+                    >
+                        Open GHCR Package
+                    </a>
+                </div>
+                <div class="package-command">
+                    <span class="package-command-label">docker run</span>
+                    <code>{DOCKER_RUN_COMMAND}</code>
+                </div>
+                <div class="package-command">
+                    <span class="package-command-label">docker pull</span>
+                    <code>docker pull {GHCR_IMAGE}</code>
+                </div>
+            </div>
+
+            <p class="download-note">
+                Direct binaries from
+                <a
+                    href={LATEST_RELEASE_URL}
+                    target="_blank"
+                    rel="noreferrer"
+                >
+                    the latest GitHub release
+                </a>.
+                On macOS/Linux, run <code>chmod +x</code> on the downloaded
+                <code>.bin</code> before first launch.
+            </p>
         </div>
 
         <div class="hero-metrics">
@@ -468,6 +880,200 @@ tests/
         box-shadow: 0 0 12px var(--border-glow);
     }
 
+    .download-console {
+        margin: 0 0 28px;
+        padding: 20px;
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        background:
+            linear-gradient(
+                140deg,
+                color-mix(in srgb, var(--accent) 10%, transparent),
+                transparent 55%
+            ),
+            color-mix(in srgb, var(--bg) 55%, transparent);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+        display: grid;
+        gap: 18px;
+    }
+
+    .download-header {
+        display: grid;
+        gap: 12px;
+    }
+
+    .download-copy {
+        display: grid;
+        gap: 16px;
+    }
+
+    .download-kicker {
+        color: var(--accent-dim);
+        font-size: 0.76rem;
+        letter-spacing: 0.16em;
+    }
+
+    .download-title-row {
+        display: flex;
+        gap: 16px;
+        justify-content: space-between;
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .download-title-row h2 {
+        margin: 0;
+        font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+        line-height: 1.2;
+    }
+
+    .download-description {
+        margin: 12px 0 0;
+        max-width: 70ch;
+        color: var(--fg-dim);
+    }
+
+    .download-description strong {
+        color: var(--fg);
+    }
+
+    .download-pill {
+        border: 1px solid var(--border);
+        border-radius: 999px;
+        padding: 8px 12px;
+        font-size: 0.78rem;
+        white-space: nowrap;
+        color: var(--accent);
+        background: color-mix(in srgb, var(--bg) 50%, transparent);
+    }
+
+    .download-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .download-primary {
+        color: var(--fg);
+    }
+
+    .download-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .download-chip {
+        display: grid;
+        gap: 6px;
+        padding: 14px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        text-decoration: none;
+        background: color-mix(in srgb, var(--bg) 64%, transparent);
+        transition:
+            border-color 0.25s ease,
+            transform 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+    .download-chip:hover,
+    .download-chip.selected {
+        border-color: var(--accent);
+        box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 20%, transparent);
+        transform: translateY(-1px);
+    }
+
+    .download-chip-title {
+        color: var(--fg);
+        font-size: 0.95rem;
+        line-height: 1.3;
+    }
+
+    .download-chip-meta {
+        color: var(--fg-dim);
+        font-size: 0.76rem;
+        word-break: break-all;
+    }
+
+    .download-note {
+        color: var(--fg-dim);
+        font-size: 0.82rem;
+        line-height: 1.6;
+    }
+
+    .download-note code {
+        color: var(--accent);
+    }
+
+    .package-panel {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) auto;
+        gap: 16px;
+        align-items: center;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        background: color-mix(in srgb, var(--bg) 68%, transparent);
+    }
+
+    .package-copy {
+        display: grid;
+        gap: 10px;
+    }
+
+    .package-kicker {
+        color: var(--accent-dim);
+        font-size: 0.74rem;
+        letter-spacing: 0.16em;
+    }
+
+    .package-copy h3 {
+        margin: 0;
+        font-size: 1rem;
+        line-height: 1.2;
+    }
+
+    .package-copy p {
+        color: var(--fg-dim);
+        line-height: 1.6;
+    }
+
+    .package-copy code,
+    .package-command code {
+        color: var(--accent);
+    }
+
+    .package-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+
+    .package-command {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border: 1px dashed var(--border);
+        border-radius: 10px;
+        background: color-mix(in srgb, var(--bg) 78%, transparent);
+        overflow-x: auto;
+    }
+
+    .package-command-label {
+        color: var(--fg);
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        white-space: nowrap;
+    }
+
+    .package-command code {
+        white-space: nowrap;
+        font-size: 0.85rem;
+    }
+
     .hero-metrics {
         display: grid;
         gap: 12px;
@@ -567,11 +1173,6 @@ tests/
         color: var(--fg-dim);
         line-height: 1.6;
         font-size: 0.9rem;
-    }
-
-    .arch-grid code {
-        color: var(--accent);
-        font-size: 0.85rem;
     }
 
     /* Components */
@@ -738,6 +1339,10 @@ tests/
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
+        .download-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
         .component-grid,
         .stack-grid {
             grid-template-columns: 1fr;
@@ -775,6 +1380,43 @@ tests/
         .hero-actions .btn {
             width: 100%;
             text-align: center;
+        }
+
+        .download-title-row,
+        .download-actions {
+            width: 100%;
+        }
+
+        .download-pill {
+            width: 100%;
+            white-space: normal;
+        }
+
+        .download-actions .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .download-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .package-panel {
+            grid-template-columns: 1fr;
+        }
+
+        .package-actions {
+            justify-content: stretch;
+        }
+
+        .package-actions .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        .package-command {
+            align-items: flex-start;
+            flex-direction: column;
         }
 
         .hero-metrics {
