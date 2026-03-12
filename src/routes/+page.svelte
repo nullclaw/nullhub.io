@@ -135,6 +135,20 @@
     });
 
     let detectedLabel = $derived(formatPlatformLabel(detectedOs, detectedArch));
+    let runCommand = $derived.by(() => {
+        if (!recommendedDownload) {
+            return null;
+        }
+
+        return buildRunCommand(recommendedDownload);
+    });
+    let runCommandLabel = $derived.by(() => {
+        if (!recommendedDownload) {
+            return null;
+        }
+
+        return recommendedDownload.os === "windows" ? "PowerShell" : "Terminal";
+    });
 
     onMount(() => {
         void detectClientPlatform();
@@ -285,6 +299,14 @@
 
         return `${formatOperatingSystem(os)} ${formatArchitecture(arch)}`;
     }
+
+    function buildRunCommand(option: DownloadOption) {
+        if (option.os === "windows") {
+            return `.\\${option.assetName}`;
+        }
+
+        return `chmod +x ./${option.assetName} && ./${option.assetName}`;
+    }
 </script>
 
 <svelte:head>
@@ -391,6 +413,28 @@
                     </div>
                 </div>
             </div>
+
+            {#if runCommand}
+                <div class="binary-command">
+                    <p class="binary-command-title">
+                        After download, run it in {runCommandLabel}
+                    </p>
+                    <div class="package-command">
+                        <span class="package-command-label">
+                            {runCommandLabel}
+                        </span>
+                        <code>{runCommand}</code>
+                    </div>
+                    {#if recommendedDownload?.os === "macos"}
+                        <p class="binary-command-note">
+                            If macOS blocks the binary:
+                            <code>
+                                xattr -d com.apple.quarantine ./{recommendedDownload.assetName}
+                            </code>
+                        </p>
+                    {/if}
+                </div>
+            {/if}
 
             <div class="package-command" id="docker">
                 <span class="package-command-label">docker run</span>
@@ -957,9 +1001,26 @@ tests/
         color: var(--fg);
     }
 
+    .binary-command {
+        display: grid;
+        gap: 8px;
+    }
+
+    .binary-command-title {
+        color: var(--fg-dim);
+        font-size: 0.84rem;
+    }
+
+    .binary-command-note {
+        color: var(--fg-dim);
+        font-size: 0.8rem;
+        line-height: 1.5;
+    }
+
     .package-command code,
     .install-link code,
-    .download-note code {
+    .download-note code,
+    .binary-command-note code {
         color: var(--accent);
     }
 
