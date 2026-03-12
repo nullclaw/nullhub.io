@@ -31,6 +31,7 @@
     const GHCR_IMAGE = "ghcr.io/nullclaw/nullhub:latest";
     const DOCKER_RUN_COMMAND =
         "docker run --rm -p 19800:19800 -v nullhub-data:/nullhub-data ghcr.io/nullclaw/nullhub:latest";
+    const DOCKER_PULL_COMMAND = `docker pull ${GHCR_IMAGE}`;
     const downloadOptions: DownloadOption[] = [
         {
             id: "macos-aarch64",
@@ -326,33 +327,16 @@
         <div class="download-console" id="downloads">
             <div class="download-header">
                 <div class="download-copy">
-                    <p class="download-kicker">LATEST RELEASE BINARIES</p>
                     <div class="download-title-row">
                         <div>
+                            <p class="download-kicker">INSTALL NULLHUB</p>
                             <h2>
                                 {#if recommendedDownload}
                                     Download for {recommendedDownload.label}
                                 {:else}
-                                    Pick the binary for your OS
+                                    Install from binary or Docker
                                 {/if}
                             </h2>
-                            <p class="download-description">
-                                {#if recommendedDownload}
-                                    Auto-detected in your browser as
-                                    <strong>{detectedLabel}</strong>. The
-                                    download URL always resolves to the newest
-                                    GitHub release asset.
-                                {:else if detectedOs !== "unknown"}
-                                    Detected
-                                    <strong>{formatOperatingSystem(detectedOs)}</strong>.
-                                    Choose the matching CPU architecture below,
-                                    or open the full release page.
-                                {:else}
-                                    Direct download links always point at the
-                                    latest GitHub release. Choose the binary
-                                    that matches your OS and CPU.
-                                {/if}
-                            </p>
                         </div>
                         <span class="download-pill">
                             {#if recommendedDownload}
@@ -364,8 +348,21 @@
                             {/if}
                         </span>
                     </div>
+                    <p class="download-description">
+                        {#if recommendedDownload}
+                            Native binary for <strong>{detectedLabel}</strong>
+                            plus a ready-to-run Docker image from GHCR.
+                        {:else if detectedOs !== "unknown"}
+                            Native binaries for
+                            <strong>{formatOperatingSystem(detectedOs)}</strong>,
+                            plus a ready-to-run Docker image from GHCR.
+                        {:else}
+                            Native binaries for macOS, Windows, Linux, plus a
+                            ready-to-run Docker image from GHCR.
+                        {/if}
+                    </p>
 
-                    <div class="download-actions">
+                    <div class="install-actions">
                         {#if recommendedDownload}
                             <a
                                 href={recommendedDownload.href}
@@ -373,76 +370,78 @@
                             >
                                 Download {recommendedDownload.shortLabel}
                             </a>
+                        {:else}
+                            <a
+                                href={LATEST_RELEASE_URL}
+                                target="_blank"
+                                rel="noreferrer"
+                                class="btn primary download-primary"
+                            >
+                                Open Latest Release
+                            </a>
                         {/if}
                         <a
-                            href={LATEST_RELEASE_URL}
+                            href={GHCR_PACKAGE_URL}
                             target="_blank"
                             rel="noreferrer"
                             class="btn secondary"
                         >
-                            View All Assets
+                            GHCR Package
                         </a>
                     </div>
                 </div>
             </div>
 
-            <div class="download-grid">
-                {#each prioritizedDownloads as option}
-                    <a
-                        href={option.href}
-                        class="download-chip"
-                        class:selected={recommendedDownload?.id === option.id}
-                    >
-                        <span class="download-chip-title">{option.label}</span>
-                        <span class="download-chip-meta">{option.assetName}</span>
-                    </a>
-                {/each}
+            <div class="package-command" id="docker">
+                <span class="package-command-label">docker run</span>
+                <code>{DOCKER_RUN_COMMAND}</code>
             </div>
 
-            <div class="package-panel" id="docker">
-                <div class="package-copy">
-                    <p class="package-kicker">OCI PACKAGE</p>
-                    <h3>Run with Docker</h3>
-                    <p>
-                        NullHub is also published to GitHub Container Registry
-                        as <code>{GHCR_IMAGE}</code> with Linux
-                        <code>amd64</code> and <code>arm64</code> images. The
-                        default container starts the web UI on
-                        <code>http://127.0.0.1:19800</code>.
-                    </p>
+            <details class="install-details">
+                <summary>All binaries and Docker commands</summary>
+                <div class="install-detail-grid">
+                    {#each prioritizedDownloads as option}
+                        <a
+                            href={option.href}
+                            class="install-link"
+                            class:selected={recommendedDownload?.id === option.id}
+                        >
+                            <span>{option.label}</span>
+                            <code>{option.assetName}</code>
+                        </a>
+                    {/each}
                 </div>
-                <div class="package-actions">
+
+                <div class="install-detail-actions">
+                    <a
+                        href={LATEST_RELEASE_URL}
+                        target="_blank"
+                        rel="noreferrer"
+                        class="mini-link"
+                    >
+                        View all release assets
+                    </a>
                     <a
                         href={GHCR_PACKAGE_URL}
                         target="_blank"
                         rel="noreferrer"
-                        class="btn secondary"
+                        class="mini-link"
                     >
-                        Open GHCR Package
+                        Open GHCR package
                     </a>
                 </div>
-                <div class="package-command">
-                    <span class="package-command-label">docker run</span>
-                    <code>{DOCKER_RUN_COMMAND}</code>
-                </div>
+
                 <div class="package-command">
                     <span class="package-command-label">docker pull</span>
-                    <code>docker pull {GHCR_IMAGE}</code>
+                    <code>{DOCKER_PULL_COMMAND}</code>
                 </div>
-            </div>
 
-            <p class="download-note">
-                Direct binaries from
-                <a
-                    href={LATEST_RELEASE_URL}
-                    target="_blank"
-                    rel="noreferrer"
-                >
-                    the latest GitHub release
-                </a>.
-                On macOS/Linux, run <code>chmod +x</code> on the downloaded
-                <code>.bin</code> before first launch.
-            </p>
+                <p class="download-note">
+                    Docker image: <code>{GHCR_IMAGE}</code>. On macOS/Linux,
+                    native <code>.bin</code> downloads require
+                    <code>chmod +x</code> before first launch.
+                </p>
+            </details>
         </div>
 
         <div class="hero-metrics">
@@ -882,7 +881,7 @@ tests/
 
     .download-console {
         margin: 0 0 28px;
-        padding: 20px;
+        padding: 16px;
         border: 1px solid var(--border);
         border-radius: 14px;
         background:
@@ -894,43 +893,44 @@ tests/
             color-mix(in srgb, var(--bg) 55%, transparent);
         box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
         display: grid;
-        gap: 18px;
+        gap: 14px;
     }
 
     .download-header {
-        display: grid;
-        gap: 12px;
+        display: block;
     }
 
     .download-copy {
         display: grid;
-        gap: 16px;
+        gap: 12px;
     }
 
     .download-kicker {
         color: var(--accent-dim);
         font-size: 0.76rem;
         letter-spacing: 0.16em;
+        margin: 0 0 8px;
     }
 
     .download-title-row {
         display: flex;
-        gap: 16px;
+        gap: 12px;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         flex-wrap: wrap;
     }
 
     .download-title-row h2 {
         margin: 0;
-        font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+        font-size: clamp(1.05rem, 2vw, 1.45rem);
         line-height: 1.2;
     }
 
     .download-description {
-        margin: 12px 0 0;
+        margin: 0;
         max-width: 70ch;
         color: var(--fg-dim);
+        font-size: 0.9rem;
     }
 
     .download-description strong {
@@ -947,9 +947,9 @@ tests/
         background: color-mix(in srgb, var(--bg) 50%, transparent);
     }
 
-    .download-actions {
+    .install-actions {
         display: flex;
-        gap: 12px;
+        gap: 10px;
         flex-wrap: wrap;
     }
 
@@ -957,104 +957,17 @@ tests/
         color: var(--fg);
     }
 
-    .download-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-    }
-
-    .download-chip {
-        display: grid;
-        gap: 6px;
-        padding: 14px;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        text-decoration: none;
-        background: color-mix(in srgb, var(--bg) 64%, transparent);
-        transition:
-            border-color 0.25s ease,
-            transform 0.25s ease,
-            box-shadow 0.25s ease;
-    }
-
-    .download-chip:hover,
-    .download-chip.selected {
-        border-color: var(--accent);
-        box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 20%, transparent);
-        transform: translateY(-1px);
-    }
-
-    .download-chip-title {
-        color: var(--fg);
-        font-size: 0.95rem;
-        line-height: 1.3;
-    }
-
-    .download-chip-meta {
-        color: var(--fg-dim);
-        font-size: 0.76rem;
-        word-break: break-all;
-    }
-
-    .download-note {
-        color: var(--fg-dim);
-        font-size: 0.82rem;
-        line-height: 1.6;
-    }
-
+    .package-command code,
+    .install-link code,
     .download-note code {
         color: var(--accent);
     }
 
-    .package-panel {
-        display: grid;
-        grid-template-columns: minmax(0, 1.5fr) auto;
-        gap: 16px;
-        align-items: center;
-        padding: 16px;
-        border: 1px solid var(--border);
-        border-radius: 12px;
-        background: color-mix(in srgb, var(--bg) 68%, transparent);
-    }
-
-    .package-copy {
-        display: grid;
-        gap: 10px;
-    }
-
-    .package-kicker {
-        color: var(--accent-dim);
-        font-size: 0.74rem;
-        letter-spacing: 0.16em;
-    }
-
-    .package-copy h3 {
-        margin: 0;
-        font-size: 1rem;
-        line-height: 1.2;
-    }
-
-    .package-copy p {
-        color: var(--fg-dim);
-        line-height: 1.6;
-    }
-
-    .package-copy code,
-    .package-command code {
-        color: var(--accent);
-    }
-
-    .package-actions {
-        display: flex;
-        justify-content: flex-end;
-    }
-
     .package-command {
-        grid-column: 1 / -1;
         display: flex;
         align-items: center;
         gap: 10px;
-        padding: 12px 14px;
+        padding: 10px 12px;
         border: 1px dashed var(--border);
         border-radius: 10px;
         background: color-mix(in srgb, var(--bg) 78%, transparent);
@@ -1072,6 +985,96 @@ tests/
     .package-command code {
         white-space: nowrap;
         font-size: 0.85rem;
+    }
+
+    .install-details {
+        border-top: 1px solid var(--border);
+        padding-top: 12px;
+    }
+
+    .install-details summary {
+        cursor: pointer;
+        color: var(--accent);
+        list-style: none;
+        font-size: 0.88rem;
+        user-select: none;
+    }
+
+    .install-details summary::-webkit-details-marker {
+        display: none;
+    }
+
+    .install-details summary::before {
+        content: "+";
+        display: inline-block;
+        margin-right: 8px;
+    }
+
+    .install-details[open] summary::before {
+        content: "-";
+    }
+
+    .install-detail-grid {
+        margin-top: 12px;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .install-link {
+        display: grid;
+        gap: 4px;
+        padding: 10px 12px;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        text-decoration: none;
+        background: color-mix(in srgb, var(--bg) 64%, transparent);
+        transition:
+            border-color 0.25s ease,
+            transform 0.25s ease,
+            box-shadow 0.25s ease;
+    }
+
+    .install-link:hover,
+    .install-link.selected {
+        border-color: var(--accent);
+        box-shadow: 0 0 16px color-mix(in srgb, var(--accent) 20%, transparent);
+        transform: translateY(-1px);
+    }
+
+    .install-link span {
+        color: var(--fg);
+        font-size: 0.9rem;
+        line-height: 1.3;
+    }
+
+    .install-link code {
+        font-size: 0.72rem;
+        word-break: break-all;
+    }
+
+    .install-detail-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 12px;
+    }
+
+    .mini-link {
+        font-size: 0.85rem;
+        text-decoration: none;
+        border-bottom: 1px dashed var(--accent-dim);
+    }
+
+    .mini-link:hover {
+        border-bottom-style: solid;
+    }
+
+    .download-note {
+        margin-top: 12px;
+        color: var(--fg-dim);
+        font-size: 0.82rem;
+        line-height: 1.6;
     }
 
     .hero-metrics {
@@ -1339,10 +1342,6 @@ tests/
             grid-template-columns: repeat(2, minmax(0, 1fr));
         }
 
-        .download-grid {
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-        }
-
         .component-grid,
         .stack-grid {
             grid-template-columns: 1fr;
@@ -1383,7 +1382,7 @@ tests/
         }
 
         .download-title-row,
-        .download-actions {
+        .install-actions {
             width: 100%;
         }
 
@@ -1392,26 +1391,13 @@ tests/
             white-space: normal;
         }
 
-        .download-actions .btn {
+        .install-actions .btn {
             width: 100%;
             text-align: center;
         }
 
-        .download-grid {
+        .install-detail-grid {
             grid-template-columns: 1fr;
-        }
-
-        .package-panel {
-            grid-template-columns: 1fr;
-        }
-
-        .package-actions {
-            justify-content: stretch;
-        }
-
-        .package-actions .btn {
-            width: 100%;
-            text-align: center;
         }
 
         .package-command {
