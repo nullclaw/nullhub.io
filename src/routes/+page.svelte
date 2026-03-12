@@ -334,9 +334,7 @@
         </p>
 
         <div class="hero-actions">
-            <a href="#downloads" class="btn primary">Download Latest</a>
-            <a href="#docker" class="btn secondary">Run with Docker</a>
-            <a href="#quickstart" class="btn secondary">Quick Start</a>
+            <a href="#build-from-source" class="btn primary">Build from Source</a>
             <a href="#features" class="btn secondary">Features</a>
             <a href="#cli" class="btn secondary">CLI Reference</a>
             <a
@@ -733,30 +731,38 @@ nullhub version                  # Print version</code
     </p>
 </section>
 
-<section class="quickstart" id="quickstart">
-    <div class="section-title">Quick Start</div>
+<section class="quickstart" id="build-from-source">
+    <div class="section-title">Build from Source</div>
     <div class="panel">
         <pre><code
-                ># Clone and build NullHub
+                ># Clone the repo and build NullHub
 git clone https://github.com/nullclaw/nullhub.git
 cd nullhub
 zig build
 
-# Launch — opens browser to http://nullhub.localhost:19800
+# Start NullHub
 ./zig-out/bin/nullhub
 
-# Or install a component directly from the CLI
+# Then open the web UI
+# http://nullhub.localhost:19800
+# Fallback: http://127.0.0.1:19800
+
+# Install ecosystem components
 ./zig-out/bin/nullhub install nullclaw
 ./zig-out/bin/nullhub install nullboiler
 ./zig-out/bin/nullhub install nulltickets
 
-# Start everything
+# Start everything after setup
 ./zig-out/bin/nullhub start-all
 
 # Check status
 ./zig-out/bin/nullhub status</code
             ></pre>
     </div>
+    <p class="cli-note">
+        This path is for building from source. For the fastest install, use the
+        binary or Docker commands in the install block above.
+    </p>
 </section>
 
 <section class="layout-section">
@@ -1335,7 +1341,7 @@ tests/
         border-bottom-style: solid;
     }
 
-    /* CLI & Quick Start */
+    /* CLI & Build From Source */
     .cli-section,
     .quickstart,
     .layout-section {
