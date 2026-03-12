@@ -349,7 +349,7 @@
                 <div class="download-copy">
                     <div class="download-title-row">
                         <div>
-                            <p class="download-kicker">INSTALL NULLHUB</p>
+                            <p class="download-kicker">QUICK START</p>
                             <h2>
                                 {#if recommendedDownload}
                                     Download for {recommendedDownload.label}
@@ -438,6 +438,12 @@
                 <span class="package-command-label">docker run</span>
                 <code>{DOCKER_RUN_COMMAND}</code>
             </div>
+
+            <p class="launch-note">
+                After launch, open <code>http://nullhub.localhost:19800</code>
+                in your browser. Fallback:
+                <code>http://127.0.0.1:19800</code>.
+            </p>
 
             <details class="install-details">
                 <summary>All binaries and Docker commands</summary>
@@ -1023,9 +1029,16 @@ tests/
         line-height: 1.5;
     }
 
+    .launch-note {
+        color: var(--fg-dim);
+        font-size: 0.82rem;
+        line-height: 1.6;
+    }
+
     .package-command code,
     .install-link code,
     .download-note code,
+    .launch-note code,
     .binary-command-note code {
         color: var(--accent);
     }
